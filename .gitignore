@@ -339,3 +339,6 @@ Client/
 *.txt
 *.lnk
 *.bat
+
+# Exception for Surveillance.ini
+!Surveillance/bin/Debug/Surveillance.ini
