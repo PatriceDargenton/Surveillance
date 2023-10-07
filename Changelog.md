@@ -4,8 +4,9 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.07] - 2023-10-06
+## [1.07] - 2023-10-07
 ### Fixed
+- AngleSharp: version 1.0.4 was not compatible with Chrome 64 bit (we always had a time out), fixed using 1.0.5.
 - Selenium updated from 4.9 to 4.11.
 
 ## [1.06] - 2023-09-20

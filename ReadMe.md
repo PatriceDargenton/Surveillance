@@ -142,8 +142,7 @@ pause
 ## Limitations
 
 - Input dialogs such as JavaScript alerts are not yet supported, but as long as the browser is not closed, the user of Surveillance can still enter his username and password and continue browsing the site (even in pilot mode);
-- The MS-Edge browser works normally but only with a temporary profile, by design;
-- AngleSharp: not compatible with Chrome 64 bit? (we always get a time out)
+- The MS-Edge browser works normally but only with a temporary profile, by design.
 
 ## Projects
 
