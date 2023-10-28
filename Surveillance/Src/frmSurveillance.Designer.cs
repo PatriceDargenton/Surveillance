@@ -227,7 +227,7 @@ namespace SurveillanceCSharp
             this.cmdReport.Text = "Report";
             this.toolTip1.SetToolTip(this.cmdReport, "Show the last Report");
             this.cmdReport.UseVisualStyleBackColor = true;
-            this.cmdReport.Click += new System.EventHandler(this.cmdReport_Click);
+            this.cmdReport.Click += new System.EventHandler(this.CmdReport_Click);
             // 
             // FrmSurveillance
             // 

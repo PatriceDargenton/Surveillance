@@ -127,7 +127,7 @@ namespace SurveillanceCSharp
             Util.StartProcess(configPath);
         }
         
-        private void cmdReport_Click(object sender, EventArgs e)
+        private void CmdReport_Click(object sender, EventArgs e)
         {
             string userFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string reportPath = Path.Combine(userFolderPath, Const.report);

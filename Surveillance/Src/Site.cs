@@ -1,4 +1,5 @@
 ﻿
+using SurveillanceCSharp;
 using System;
 using System.Collections.Generic;
 
@@ -85,6 +86,11 @@ namespace Surveillance
         public string ConnectionBtnFindElementById { get; set; }
         public string ConnectionBtnFindElementByClassName { get; set; }
         public string ConnectionBtnFindElementByCssSelector { get; set; }
+
+        public List<WSAParameter> InlineFrames { get; set; }
+        public string SelectFindElementById { get; set; }
+        public int SelectIndex { get; set; }
+
         /// <summary>
         /// Only one method to find the html element that should contains the CheckText
         /// (but this method can operate all the other methods)
@@ -171,7 +177,8 @@ namespace Surveillance
             string byClassName = null, string byCssSelector = null,
             bool connectionByProfile = false, bool autoconnection = false,
             bool ignoreContextAllreadyOpenedAlert = false,
-            string checkText = null, string checkTextByCssSelector = null)
+            string checkText = null, string checkTextByCssSelector = null,
+            List<WSAParameter> inlineFrames = null, string byIdSelect = null, int selectIndex = 0)
         {
             var instance = new Site(name, surveillance, certif, url, profile, profilePW, login, pw,
                 byIdLogin: byIdLogin,
@@ -182,7 +189,8 @@ namespace Surveillance
                 connectionByProfile: connectionByProfile,
                 autoconnection: autoconnection,
                 ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
-                checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
+                checkText: checkText, checkTextByCssSelector: checkTextByCssSelector,
+                inlineFrames: inlineFrames, byIdSelect: byIdSelect, selectIndex: selectIndex);
             return instance;
         }
         private Site(string name, bool surveillance, bool certif, string url,
@@ -191,7 +199,8 @@ namespace Surveillance
             string byClassName = null, string byCssSelector = null,
             bool connectionByProfile = false, bool autoconnection = false,
             bool ignoreContextAllreadyOpenedAlert = false,
-            string checkText = null, string checkTextByCssSelector = null)
+            string checkText = null, string checkTextByCssSelector = null,
+            List<WSAParameter> inlineFrames = null, string byIdSelect = null, int selectIndex = 0)
         {
             SiteName = name;
             Disabled = !surveillance;
@@ -211,6 +220,10 @@ namespace Surveillance
             this.ConnectionByProfile = connectionByProfile;
             AutoconnectionByProfile = autoconnection;
             this.IgnoreContextAllreadyOpenedAlert = ignoreContextAllreadyOpenedAlert;
+
+            this.InlineFrames = inlineFrames;
+            this.SelectFindElementById = byIdSelect;
+            this.SelectIndex = selectIndex;
 
             CheckElement = false;
             if (!String.IsNullOrEmpty(checkTextByCssSelector))

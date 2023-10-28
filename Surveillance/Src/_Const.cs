@@ -13,8 +13,8 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.07";
-        public const string appDate = "07/10/2023";
+        public const string appVersion = "1.08";
+        public const string appDate = "28/10/2023";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
 
@@ -39,6 +39,9 @@ namespace Surveillance
         public const int allSitesWaitTimeSec = 10;
 
         public static bool showTagNameInFullReport = false;
+
+        // Debug mode: do not navigate
+        public static bool navigate = true;
 
         // If false: another Chrome is open and an error is raised:
         // unknown error: Chrome failed to start: exited normally.

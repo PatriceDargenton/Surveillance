@@ -3,27 +3,38 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
-//using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium.Support.UI;
 using Surveillance;
 using System;
 using System.Collections.Generic;
-//using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-//using static System.Net.Mime.MediaTypeNames;
 
 namespace SurveillanceCSharp
 {
+    public enum ParameterType // Enumeration of the method used to find a Web Element
+    {
+        ById,
+        ByName,
+        ByClassName,
+        ByCssSelector
+    }
+
+    public class WSAParameter // Name of a Web Element to search for, and how to find it: which method to use
+    {
+        public string Value { get; set; }
+        public ParameterType Type { get; set; }
+        
+    }
+
     public class WSASurveillance // WebSite and App Surveillance (monitoring)
     {
         #region "Installation"
 
         private static IWebDriver m_driver = null;
-
-        
 
         public static string DriversFolderPath()
         {
@@ -158,17 +169,16 @@ namespace SurveillanceCSharp
         
         public static bool NavigateUsingChromeWithUserProfile(SitesConfig sitesConf, out string result)
         {
-
             // Selenium don't use Status Code (404, ...)
             // https://www.selenium.dev/documentation/test_practices/discouraged/http_response_codes
-            WSAPing.PingWebSites(sitesConf.Sites);
+            if (Const.navigate) WSAPing.PingWebSites(sitesConf.Sites);
 
             string title = DateTime.Now.ToString() + "\n";
             var sb = new StringBuilder(title);
             var sbFull = new StringBuilder();
             bool success = false;
 
-            if (sitesConf.NbWebSites > 0)
+            if (Const.navigate && sitesConf.NbWebSites > 0)
             {
                 string chromeDriverDir = ChromeDriverFolderPath();
 
@@ -302,7 +312,7 @@ namespace SurveillanceCSharp
                 
                 string siteName = site.DisplaySiteName(sitesConf.LongestSiteName);
 
-                if (!site.Executable)
+                if (Const.navigate && !site.Executable)
                 {
                     i++;
                     
@@ -375,15 +385,14 @@ namespace SurveillanceCSharp
         
         public static bool NavigateUsingFirefoxWithUserProfile(SitesConfig sitesConf, out string result)
         {
-
-            WSAPing.PingWebSites(sitesConf.Sites);
+            if (Const.navigate) WSAPing.PingWebSites(sitesConf.Sites);
 
             string title = DateTime.Now.ToString() + "\n";
             var sb = new StringBuilder(title);
             var sbFull = new StringBuilder();
             bool success = false;
 
-            if (sitesConf.NbWebSites > 0) 
+            if (Const.navigate && sitesConf.NbWebSites > 0) 
             {
                 string folder = FirefoxDriverFolderPath();
                 //string file = folder + @"\geckodriver.exe";
@@ -432,7 +441,7 @@ namespace SurveillanceCSharp
                     // Firefox may not be installed!
 
                     sb.AppendLine("Firefox monitoring failed: " + ex.Message);
-                    sb.AppendLine("(possible cause: Firefox is not installed)");
+                    sb.AppendLine("(possible cause: Firefox is not installed, or is updating)");
                 }
             }
             else success = true;
@@ -453,7 +462,7 @@ namespace SurveillanceCSharp
             {
                 if (site.Disabled) continue;
                 string siteName = site.DisplaySiteName(sitesConf.LongestSiteName);
-                if (!site.Executable)
+                if (Const.navigate && !site.Executable)
                 {
                     i++;
 
@@ -543,9 +552,9 @@ namespace SurveillanceCSharp
 
     #endregion
 
-    #region "Edge"
+        #region "Edge"
 
-    public static void NavigateUsingEdge(string url)
+        public static void NavigateUsingEdge(string url)
         {
             m_driver = new EdgeDriver();
             m_driver.Navigate().GoToUrl(url);
@@ -553,17 +562,15 @@ namespace SurveillanceCSharp
         
         public static bool NavigateUsingEdgeWithUserProfile(SitesConfig sitesConf, out string result)
         {
-
-            WSAPing.PingWebSites(sitesConf.Sites);
+            if (Const.navigate) WSAPing.PingWebSites(sitesConf.Sites);
 
             string title = DateTime.Now.ToString() + "\n";
             var sb = new StringBuilder(title);
             var sbFull = new StringBuilder();
             bool success = false;
 
-            if (sitesConf.NbWebSites > 0)
+            if (Const.navigate && sitesConf.NbWebSites > 0)
             {
-
                 EdgeOptions options = new EdgeOptions();
 
                 if (sitesConf.UseProfile) // Doesn't work
@@ -624,7 +631,7 @@ namespace SurveillanceCSharp
             {
                 if (site.Disabled) continue;
                 string siteName = site.DisplaySiteName(sitesConf.LongestSiteName);
-                if (!site.Executable)
+                if (Const.navigate && !site.Executable)
                 {
                     i++;
 
@@ -676,8 +683,6 @@ namespace SurveillanceCSharp
         #endregion
 
         #region "Common"
-
-        
 
         public static void NavigateSite(
             Site site, int longestSiteName, StringBuilder sb, StringBuilder sbFull)
@@ -781,11 +786,46 @@ namespace SurveillanceCSharp
             bool success = false;
             string tag = "";
             errorMsg = "";
-            ImplicitWait(Const.browserFirstWaitTimeMSec);
+            if (Const.navigate) ImplicitWait(Const.browserFirstWaitTimeMSec);
             try
             {
                 Debug.WriteLine(site.SiteName);
                 IWebElement usernameInput = null, passwordInput = null, loginButton = null;
+
+                // Possibility to switch to one or more iframes
+                if (site.InlineFrames?.Count > 0)
+                foreach(WSAParameter prm in site.InlineFrames)
+                {
+                    if (!String.IsNullOrEmpty(prm.Value))
+                    {
+                        IWebElement iframe = null;
+                        switch (prm.Type)
+                        {
+                            case ParameterType.ById:
+                                iframe = m_driver.FindElement(By.Id(prm.Value));
+                                break;
+                            case ParameterType.ByName:
+                                iframe = m_driver.FindElement(By.Name(prm.Value));
+                                break;
+                            case ParameterType.ByClassName:
+                                iframe = m_driver.FindElement(By.ClassName(prm.Value));
+                                break;
+                            case ParameterType.ByCssSelector:
+                                iframe = m_driver.FindElement(By.CssSelector(prm.Value));
+                                break;
+                        }
+                        m_driver.SwitchTo().Frame(iframe); // Switch to the frame
+                    }
+                }
+
+                // For example: authentification type
+                if (!String.IsNullOrEmpty(site.SelectFindElementById))
+                {
+                    IWebElement selectElement = m_driver.FindElement(By.Id(site.SelectFindElementById));
+                    SelectElement select = new SelectElement(selectElement);
+                    // Selection of the option by index (0 for the first option, 1 for the second, etc.)
+                    select.SelectByIndex(site.SelectIndex);
+                }
 
                 tag = "tag Login Id:" + site.LoginInputFindElementById;
                 if (!String.IsNullOrEmpty(site.LoginInputFindElementById)) 
@@ -808,9 +848,8 @@ namespace SurveillanceCSharp
                 if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementByClassName)) 
                     loginButton = m_driver.FindElement(By.ClassName(site.ConnectionBtnFindElementByClassName));
                 tag = "tag Connection button Css Selector:" + site.ConnectionBtnFindElementByCssSelector;
-                if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementByCssSelector)) 
-                    loginButton = m_driver.FindElement(By.CssSelector(
-                        site.ConnectionBtnFindElementByCssSelector));
+                if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementByCssSelector))
+                    loginButton = m_driver.FindElement(By.CssSelector(site.ConnectionBtnFindElementByCssSelector));
 
                 if (site.JustCheckElement || !site.StatusCodeOk) 
                 { 
@@ -1085,6 +1124,11 @@ namespace SurveillanceCSharp
             string siteName = "";
             string siteURL = "";
             string login = "", byIdLogin = "", byIdPW = "", byIdConnection = "";
+            
+            string byIdSelect = "";
+            int selectIndex = 0;
+            var iFrames = new List<WSAParameter>();
+
             string byClassName = "", byCssSelector = "";
             string byNameLogin = "", byNamePW = "";
             string checkText = "";
@@ -1165,7 +1209,8 @@ namespace SurveillanceCSharp
                             profile, profilePW,
                             login, "", byIdLogin, byIdPW, byIdConnection,
                             ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
+                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector,
+                            inlineFrames: iFrames, byIdSelect: byIdSelect, selectIndex: selectIndex);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
@@ -1202,11 +1247,16 @@ namespace SurveillanceCSharp
                 {
                     siteName = value;
                     siteURL = "";
-                    login = ""; byIdLogin = ""; byIdPW = ""; byIdConnection = "";
+                    login = ""; byIdLogin = ""; byIdPW = ""; byIdConnection = ""; 
                     byClassName = ""; byCssSelector = "";
                     autoConnection = false; connectionByProfile = false;
                     byNameLogin = ""; byNamePW = "";
                     checkText = ""; checkTextByCssSelector = ""; checkTextName = "";
+                    
+                    byIdSelect = "";
+                    selectIndex = 0;
+                    iFrames = new List<WSAParameter>();
+
                     surveillance = true;
                     certif = false;
                     ignoreContextAllreadyOpenedAlert = false;
@@ -1236,6 +1286,52 @@ namespace SurveillanceCSharp
 
                 value = ReadValue(ligne, ". ByIdConnection : "); 
                 if (value.Length > 0) { byIdConnection = value; continue; }
+                
+                value = ReadValue(ligne, ". ByIdSelect : ");
+                if (value.Length > 0) { byIdSelect = value; continue; }
+                
+                value = ReadValue(ligne, ". ByIdInlineFrame : ");
+                if (value.Length > 0) {
+                    var iFrame = new WSAParameter();
+                    iFrame.Type = ParameterType.ById;
+                    iFrame.Value = value;
+                    iFrames.Add(iFrame);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByCssSelectorInlineFrame : ");
+                if (value.Length > 0)
+                {
+                    var iFrame = new WSAParameter();
+                    iFrame.Type = ParameterType.ByCssSelector;
+                    iFrame.Value = value;
+                    iFrames.Add(iFrame);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByNameInlineFrame : ");
+                if (value.Length > 0)
+                {
+                    var iFrame = new WSAParameter();
+                    iFrame.Type = ParameterType.ByName;
+                    iFrame.Value = value;
+                    iFrames.Add(iFrame);
+                    continue;
+                }
+                value = ReadValue(ligne, ". byClassNameInlineFrame : ");
+                if (value.Length > 0)
+                {
+                    var iFrame = new WSAParameter();
+                    iFrame.Type = ParameterType.ByClassName;
+                    iFrame.Value = value;
+                    iFrames.Add(iFrame);
+                    continue;
+                }
+
+                value = ReadValue(ligne, ". SelectIndex : ");
+                if (value.Length > 0) 
+                { 
+                    int.TryParse(value, out selectIndex ); 
+                    continue; 
+                }
 
                 value = ReadValue(ligne, ". ByClassName : ");
                 if (value.Length > 0) { byClassName = value; continue; }
