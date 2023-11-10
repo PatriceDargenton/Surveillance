@@ -78,24 +78,22 @@ namespace Surveillance
         /// </summary>
         public string CheckTextName { get; set; }
 
-        // Methods to find an html element
-        public string LoginInputFindElementById { get; set; }
-        public string PWInputFindElementById { get; set; }
-        public string LoginInputFindElementByName { get; set; }
-        public string PWInputFindElementByName { get; set; }
-        public string ConnectionBtnFindElementById { get; set; }
-        public string ConnectionBtnFindElementByClassName { get; set; }
-        public string ConnectionBtnFindElementByCssSelector { get; set; }
-
+        /// <summary>
+        /// List of inline frames to switch to, before searching any web element
+        /// </summary>
         public List<WSAParameter> InlineFrames { get; set; }
-        public string SelectFindElementById { get; set; }
-        public int SelectIndex { get; set; }
 
         /// <summary>
-        /// Only one method to find the html element that should contains the CheckText
-        /// (but this method can operate all the other methods)
+        /// Index of the select web element to choose
         /// </summary>
-        public string CheckTextFindElementByCssSelector { get; set; }
+        public int SelectIndex { get; set; }
+
+        // Methods to find an html element
+        public WSAParameter LoginInputFindElement { get; set; }
+        public WSAParameter PWInputFindElement { get; set; }
+        public WSAParameter ConnectionBtnFindElement { get; set; }
+        public WSAParameter CheckTextFindElement { get; set; }
+        public WSAParameter SelectFindElement { get; set; }
 
         // Boolean results
         public bool StatusCodeOk { get; set; }
@@ -135,18 +133,19 @@ namespace Surveillance
         public static Site CreateInstanceSiteSimplePing(
             string name, bool surveillance, bool certif, string url,
             string profile, string profilePW,
-            string checkText = null, string checkTextByCssSelector = null, string checkTextName = null)
+            string checkText = null, 
+            WSAParameter checkTextPrm = null,
+            string checkTextName = null)
         {
             var instance = new Site(name, surveillance, certif, url, profile, profilePW,
                 checkText: checkText,
-                checkTextByCssSelector: checkTextByCssSelector,
+                checkTextPrm: checkTextPrm,
                 checkTextName: checkTextName);
             return instance;
         }
-
         private Site(string name, bool surveillance, bool certif, string url,
             string profile, string profilePW,
-            string checkText = null, string checkTextByCssSelector = null, string checkTextName = null)
+            string checkText = null, WSAParameter checkTextPrm = null, string checkTextName = null)
         {
             SiteName = name;
             Disabled = !surveillance;
@@ -160,12 +159,12 @@ namespace Surveillance
 
             JustCheckElement = false;
             CheckElement = false;
-            if (!String.IsNullOrEmpty(checkTextByCssSelector))
+            if (checkTextPrm != null)
             {
                 CheckElement = true;
                 JustCheckElement = SimplePing;
                 this.CheckText = checkText;
-                CheckTextFindElementByCssSelector = checkTextByCssSelector;
+                this.CheckTextFindElement = checkTextPrm;
                 this.CheckTextName = checkTextName;
             }
         }
@@ -173,34 +172,33 @@ namespace Surveillance
         public static Site CreateInstanceSiteWithConnection(
             string name, bool surveillance, bool certif, string url,
             string profile, string profilePW, string login, string pw,
-            string byIdLogin = null, string byIdPW = null, string byIdConnection = null,
-            string byClassName = null, string byCssSelector = null,
+            WSAParameter loginPrm = null, 
+            WSAParameter PWPrm = null, 
+            WSAParameter connectionPrm = null,
             bool connectionByProfile = false, bool autoconnection = false,
             bool ignoreContextAllreadyOpenedAlert = false,
-            string checkText = null, string checkTextByCssSelector = null,
-            List<WSAParameter> inlineFrames = null, string byIdSelect = null, int selectIndex = 0)
+            string checkText = null, WSAParameter checkTextPrm = null,
+            List<WSAParameter> inlineFrames = null, 
+            WSAParameter selectPrm = null, int selectIndex = 0)
         {
             var instance = new Site(name, surveillance, certif, url, profile, profilePW, login, pw,
-                byIdLogin: byIdLogin,
-                byIdPW: byIdPW,
-                byIdConnection: byIdConnection,
-                byClassName: byClassName,
-                byCssSelector: byCssSelector,
+                loginPrm: loginPrm,
+                PWPrm: PWPrm,
+                connectionPrm: connectionPrm,
                 connectionByProfile: connectionByProfile,
                 autoconnection: autoconnection,
                 ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
-                checkText: checkText, checkTextByCssSelector: checkTextByCssSelector,
-                inlineFrames: inlineFrames, byIdSelect: byIdSelect, selectIndex: selectIndex);
+                checkText: checkText, checkTextPrm: checkTextPrm,
+                inlineFrames: inlineFrames, selectPrm: selectPrm, selectIndex: selectIndex);
             return instance;
         }
         private Site(string name, bool surveillance, bool certif, string url,
             string profile, string profilePW, string login, string pw,
-            string byIdLogin, string byIdPW, string byIdConnection = null,
-            string byClassName = null, string byCssSelector = null,
+            WSAParameter loginPrm, WSAParameter PWPrm, WSAParameter connectionPrm = null,
             bool connectionByProfile = false, bool autoconnection = false,
             bool ignoreContextAllreadyOpenedAlert = false,
-            string checkText = null, string checkTextByCssSelector = null,
-            List<WSAParameter> inlineFrames = null, string byIdSelect = null, int selectIndex = 0)
+            string checkText = null, WSAParameter checkTextPrm = null,
+            List<WSAParameter> inlineFrames = null, WSAParameter selectPrm = null, int selectIndex = 0)
         {
             SiteName = name;
             Disabled = !surveillance;
@@ -212,67 +210,26 @@ namespace Surveillance
             UserProfilePW = profilePW;
             SiteLogin = login;
             SitePassWord = pw;
-            LoginInputFindElementById = byIdLogin;
-            PWInputFindElementById = byIdPW;
-            ConnectionBtnFindElementById = byIdConnection;
-            ConnectionBtnFindElementByClassName = byClassName;
-            ConnectionBtnFindElementByCssSelector = byCssSelector;
+            LoginInputFindElement = loginPrm;
+            PWInputFindElement = PWPrm;
+            ConnectionBtnFindElement = connectionPrm;
             this.ConnectionByProfile = connectionByProfile;
             AutoconnectionByProfile = autoconnection;
             this.IgnoreContextAllreadyOpenedAlert = ignoreContextAllreadyOpenedAlert;
 
             this.InlineFrames = inlineFrames;
-            this.SelectFindElementById = byIdSelect;
+            this.SelectFindElement = selectPrm;
             this.SelectIndex = selectIndex;
 
             CheckElement = false;
-            if (!String.IsNullOrEmpty(checkTextByCssSelector))
+            if (checkTextPrm != null)
             {
                 CheckElement = true;
                 this.CheckText = checkText;
-                CheckTextFindElementByCssSelector = checkTextByCssSelector;
+                this.CheckTextFindElement = checkTextPrm;
             }
         }
 
-        public static Site CreateInstanceSiteWithConnectionByNameAndByIdConnection(
-            string name, bool surveillance, bool certif, string url,
-            string profile, string profilePW,
-            string byNameLogin, string byNamePW, string byIdConnection,
-            string checkText = null, string checkTextByCssSelector = null)
-        {
-            var instance = new Site(name, surveillance, certif, url, profile, profilePW,
-                byNameLogin: byNameLogin,
-                byNamePW: byNamePW,
-                byIdConnection: byIdConnection,
-                checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
-            return instance;
-        }
-        private Site(string name, bool surveillance, bool certif, string url,
-            string profile, string profilePW,
-            string byNameLogin, string byNamePW, string byIdConnection,
-            string checkText = null, string checkTextByCssSelector = null)
-        {
-            SiteName = name;
-            Disabled = !surveillance;
-            Certificate = certif;
-            SiteUrl = url;
-            SimplePing = false;
-            Connection = true;
-            UserProfileLogin = profile;
-            UserProfilePW = profilePW;
-            LoginInputFindElementByName = byNameLogin;
-            PWInputFindElementByName = byNamePW;
-            ConnectionBtnFindElementById = byIdConnection;
-            ConnectionByProfile = true;
-
-            CheckElement = false;
-            if (!String.IsNullOrEmpty(checkTextByCssSelector))
-            {
-                CheckElement = true;
-                this.CheckText = checkText;
-                CheckTextFindElementByCssSelector = checkTextByCssSelector;
-            }
-        }
 
         public string DisplaySiteName(int longestSiteName)
         {
@@ -327,7 +284,8 @@ namespace Surveillance
             if (!this.CheckElement) return "";
 
             string tagName = "";
-            if (Const.showTagNameInFullReport) tagName = " (tag:'" + this.CheckTextFindElementByCssSelector + "')";
+            if (Const.showTagNameInFullReport)
+                tagName = " (tag:'" + this.CheckTextFindElement.Value + "')";
 
             if (String.IsNullOrEmpty(CheckText))
                 return Const.sep + (this.TextFound ? "tag found" : "tag not found") +

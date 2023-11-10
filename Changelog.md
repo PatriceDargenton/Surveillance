@@ -4,6 +4,20 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.09] - 2023-11-10
+### Updated
+- WSAParameter generalized, and Site constructors simlified;
+- ByClassName -> ByClassNameLogin, ByClassNameConnection, ByCssSelector -> ByCssSelectorConnection, CheckTextByCssSelector -> ByCssSelectorCheckText.
+
+### Added
+- ByIdSelectorCheckText, ByNameSelectorCheckText, ByClassNameSelectorCheckText;
+- ByNameLogin;
+- ByClassNamePW, ByCssSelectorPW;
+- ByNameConnection, ByClassNameConnection, ByCssSelectorConnection;
+- ByNameSelect, ByClassNameSelect, ByCssSelectorSelect;
+- ByNameInlineFrame, ByClassNameInlineFrame, ByCssSelectorInlineFrame;
+- ByIdCheckText, ByNameCheckText, ByClassNameCheckText.
+
 ## [1.08] - 2023-10-28
 ### Added
 - Boolean Const.navigate: if false, do not navigate, just test ini parameters in debug mode.

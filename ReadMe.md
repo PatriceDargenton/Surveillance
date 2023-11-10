@@ -58,7 +58,7 @@ pause
 . ConnectionByProfile : Yes // Use Windows user profile to connect to the website
 . ByIdLogin : login
 . ByIdPW : password
-. ByCssSelector : input[value='Connection']
+. ByCssSelectorConnection : input[value='Connection']
 
 - Site : Example4
 . URL : https://www.example4.com
@@ -66,7 +66,7 @@ pause
 . Autoconnection : Yes // Ignore error if login button not present, when user is already logged in
 . ByIdLogin : Login
 . ByIdPW : Password
-. ByClassName : btn
+. ByClassNameConnection : btn
 
 - Site : Example5
 . URL : https://www.example5.com
@@ -75,14 +75,14 @@ pause
 . Autoconnection : Yes
 . ByIdLogin : Login
 . ByIdPW : Password
-. ByClassName : btn
+. ByClassNameConnection : btn
 
 - Site : Example6
 . URL : https://www.example6.com
 . ByNameLogin : login
 . ByNamePW : password
 . ByIdConnection : anchorHome
-. CheckTextByCssSelector : #spantitle // How to find the html element that contains the text to find
+. ByCssSelectorCheckText : #spantitle // How to find the html element that contains the text to find
 . CheckText : My text // Text to find in the web site
 
 - Site : Example7
@@ -91,7 +91,7 @@ pause
 . ByIdLogin : LOGIN
 . ByIdPW : PWD
 . ByIdConnection : submit
-. CheckTextByCssSelector : [class*='name of the block'] // How to find the html element that contains the text to find
+. ByCssSelectorCheckText : [class*='name of the block'] // How to find the html element that contains the text to find
 . CheckText : Hello // Text to find in the web site
 
 - Site : Example8
@@ -129,14 +129,14 @@ pause
 
 - Site : Example12
 . URL : https://www.example12.com // Simple ping with a login input html element to find in the web site
-. CheckTextByCssSelector : input[name='username']
+. ByCssSelectorCheckText : input[name='username']
 . CheckTextName : Username // For information only: name to display in the report if the input box is found
 
 - Site : Example13
 . URL : https://www.example13.com
 . Certificate : Yes
 . ByCssSelectorInlineFrame : body>iframe // Switch to this frame before searching any web element
-. Login : formateur
+. Login : login
 . ByIdLogin : id:logon:USERNAME
 . ByIdPW : id:logon:PASSWORD
 . ByIdConnection : id:logon:logonButton
@@ -167,6 +167,5 @@ pause
 
 ## Projects
 
-- WSAParameter can be generalized, and Site constructors can then be simlified;
 - Shortcut Mode: Control of an already opened browser (for now, the browser must be closed beforehand);
 - Control of sites with a connection via a JavaScript alert dialog box.

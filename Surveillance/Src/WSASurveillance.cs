@@ -28,6 +28,13 @@ namespace SurveillanceCSharp
         public string Value { get; set; }
         public ParameterType Type { get; set; }
         
+        public WSAParameter() { }
+
+        public WSAParameter(string value, ParameterType type)
+        {
+            Value = value;
+            Type = type;
+        }
     }
 
     public class WSASurveillance // WebSite and App Surveillance (monitoring)
@@ -780,6 +787,30 @@ namespace SurveillanceCSharp
             }
         }
 
+        private static IWebElement FindElement(WSAParameter prm)
+        {
+            IWebElement selectElement = null;
+            if (Const.navigate && prm != null && !String.IsNullOrEmpty(prm.Value))
+            {
+                switch (prm.Type)
+                {
+                    case ParameterType.ById:
+                        selectElement = m_driver.FindElement(By.Id(prm.Value));
+                        break;
+                    case ParameterType.ByName:
+                        selectElement = m_driver.FindElement(By.Name(prm.Value));
+                        break;
+                    case ParameterType.ByClassName:
+                        selectElement = m_driver.FindElement(By.ClassName(prm.Value));
+                        break;
+                    case ParameterType.ByCssSelector:
+                        selectElement = m_driver.FindElement(By.CssSelector(prm.Value));
+                        break;
+                }
+            }
+            return selectElement;
+        }
+
         public static bool ConnectIntoTheSite(Site site, ref string errorMsg, ref bool continueCheck)
         {
             continueCheck = false;
@@ -796,60 +827,32 @@ namespace SurveillanceCSharp
                 if (site.InlineFrames?.Count > 0)
                 foreach(WSAParameter prm in site.InlineFrames)
                 {
-                    if (!String.IsNullOrEmpty(prm.Value))
-                    {
-                        IWebElement iframe = null;
-                        switch (prm.Type)
-                        {
-                            case ParameterType.ById:
-                                iframe = m_driver.FindElement(By.Id(prm.Value));
-                                break;
-                            case ParameterType.ByName:
-                                iframe = m_driver.FindElement(By.Name(prm.Value));
-                                break;
-                            case ParameterType.ByClassName:
-                                iframe = m_driver.FindElement(By.ClassName(prm.Value));
-                                break;
-                            case ParameterType.ByCssSelector:
-                                iframe = m_driver.FindElement(By.CssSelector(prm.Value));
-                                break;
-                        }
-                        m_driver.SwitchTo().Frame(iframe); // Switch to the frame
-                    }
+                    IWebElement iframe = FindElement(prm);
+                    // Switch to the frame
+                    if (iframe != null) m_driver.SwitchTo().Frame(iframe); 
                 }
 
                 // For example: authentification type
-                if (!String.IsNullOrEmpty(site.SelectFindElementById))
+                if (site.SelectFindElement != null && 
+                    !String.IsNullOrEmpty(site.SelectFindElement.Value))
                 {
-                    IWebElement selectElement = m_driver.FindElement(By.Id(site.SelectFindElementById));
-                    SelectElement select = new SelectElement(selectElement);
-                    // Selection of the option by index (0 for the first option, 1 for the second, etc.)
-                    select.SelectByIndex(site.SelectIndex);
+                    IWebElement selectElement = FindElement(site.SelectFindElement);
+                    if (selectElement != null)
+                    {
+                        SelectElement select = new SelectElement(selectElement);
+                        // Selection of the option by index (0 for the first option, 1 for the second, etc.)
+                        select.SelectByIndex(site.SelectIndex);
+                    }
                 }
+                
+                tag = "tag Login :" + site.LoginInputFindElement?.Value;
+                usernameInput = FindElement(site.LoginInputFindElement);
 
-                tag = "tag Login Id:" + site.LoginInputFindElementById;
-                if (!String.IsNullOrEmpty(site.LoginInputFindElementById)) 
-                    usernameInput = m_driver.FindElement(By.Id(site.LoginInputFindElementById));
-                tag = "tag Login Name:" + site.LoginInputFindElementByName;
-                if (!String.IsNullOrEmpty(site.LoginInputFindElementByName)) 
-                    usernameInput = m_driver.FindElement(By.Name(site.LoginInputFindElementByName));
+                tag = "tag Password :" + site.PWInputFindElement?.Value;
+                passwordInput = FindElement(site.PWInputFindElement);
 
-                tag = "tag Password Id:" + site.PWInputFindElementById;
-                if (!String.IsNullOrEmpty(site.PWInputFindElementById)) 
-                    passwordInput = m_driver.FindElement(By.Id(site.PWInputFindElementById));
-                tag = "tag Password Name:" + site.PWInputFindElementByName;
-                if (!String.IsNullOrEmpty(site.PWInputFindElementByName)) 
-                    passwordInput = m_driver.FindElement(By.Name(site.PWInputFindElementByName));
-
-                tag = "tag Connection button Id:" + site.ConnectionBtnFindElementById;
-                if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementById)) 
-                    loginButton = m_driver.FindElement(By.Id(site.ConnectionBtnFindElementById));
-                tag = "tag Connection button Class Name:" + site.ConnectionBtnFindElementByClassName;
-                if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementByClassName)) 
-                    loginButton = m_driver.FindElement(By.ClassName(site.ConnectionBtnFindElementByClassName));
-                tag = "tag Connection button Css Selector:" + site.ConnectionBtnFindElementByCssSelector;
-                if (!String.IsNullOrEmpty(site.ConnectionBtnFindElementByCssSelector))
-                    loginButton = m_driver.FindElement(By.CssSelector(site.ConnectionBtnFindElementByCssSelector));
+                tag = "tag Connection button :" + site.ConnectionBtnFindElement?.Value;
+                loginButton = FindElement(site.ConnectionBtnFindElement);
 
                 if (site.JustCheckElement || !site.StatusCodeOk) 
                 { 
@@ -928,10 +931,10 @@ namespace SurveillanceCSharp
             try
             {
                 ImplicitWait(Const.browserCheckTextWaitTimeMSec);
-
+                
                 //if (site.SiteName == "") Debug.WriteLine("!");
 
-                IWebElement td = m_driver.FindElement(By.CssSelector(site.CheckTextFindElementByCssSelector));
+                IWebElement td = FindElement(site.CheckTextFindElement);
                 bool bSucces1 = false;
 
                 if (String.IsNullOrEmpty(site.CheckText) && td != null)
@@ -949,23 +952,7 @@ namespace SurveillanceCSharp
                             bSucces1 = true;
                             break;
                         }
-                        //string text2 = item.GetAttribute("textContent");
-                        //Debug.WriteLine("item.GetAttribute = " + text2);
                     }
-
-                    /*
-                    if (!bSucces1)
-                    {
-                        IList<IWebElement> items = td.FindElements(By.XPath(".//span"));
-                        foreach (var item in items)
-                        {
-                            Debug.WriteLine("Text found : [" + item.Text.Trim() + "]");
-                            Debug.WriteLine("Text checked : [" + site.CheckText + "]");
-                            bool equality = (item.Text.Trim() == site.CheckText);
-                            Debug.WriteLine("Equality : " + equality);
-                            if (equality) { bSucces1 = true; break; }
-                        }
-                    }*/
 
                     if (!bSucces1)
                     {
@@ -988,7 +975,6 @@ namespace SurveillanceCSharp
                         if (td.Text.StartsWith(site.CheckText)) bSucces1 = true;
                     }
                 }
-                //TextFound = bSucces1;
 
                 site.TextFound = bSucces1;
                 if (String.IsNullOrEmpty(site.CheckText))
@@ -1012,13 +998,7 @@ namespace SurveillanceCSharp
                     site.ConnectionOk = true;
                     site.ConnectionResult = "OK";
                 }
-
-                /*
-                sb.AppendLine(SiteName + sep1 + "Ping " + site.StatusCodeResult +
-                    site.DisplayConnectionStatus() + site.DisplayCheckTextStatus());
-                sbFull.AppendLine(SiteName + sep1 + "Ping " + site.StatusCodeResult +
-                    site.DisplayFullConnectionStatus() + site.DisplayFullCheckTextStatus());
-                */
+                
                 sb.AppendLine(siteName + 
                     site.DisplayPingStatus() +
                     site.DisplayConnectionStatus() + 
@@ -1123,17 +1103,17 @@ namespace SurveillanceCSharp
             string value = "";
             string siteName = "";
             string siteURL = "";
-            string login = "", byIdLogin = "", byIdPW = "", byIdConnection = "";
-            
-            string byIdSelect = "";
+            string login = "";
+
+            string checkTextName="";
+            WSAParameter loginPrm = null, PWPrm = null, connectionPrm = null,
+                selectPrm = null, checkTextPrm = null;
+
+            string checkText = "";
+
             int selectIndex = 0;
             var iFrames = new List<WSAParameter>();
 
-            string byClassName = "", byCssSelector = "";
-            string byNameLogin = "", byNamePW = "";
-            string checkText = "";
-            string checkTextByCssSelector = "";
-            string checkTextName = "";
             bool autoConnection = false;
             bool connectionByProfile = false;
             bool certif = false;
@@ -1148,69 +1128,62 @@ namespace SurveillanceCSharp
                 {
                     if (!siteInProgress) continue;
 
-                    if (connectionByProfile && byClassName.Length > 0)
+                    if (connectionByProfile && loginPrm != null)
                     {
                         Debug.WriteLine("byClassName and connection via profile: " + siteName);
                         var site1 = Site.CreateInstanceSiteWithConnection(
-                            siteName, surveillance, certif, siteURL, 
+                            siteName, surveillance, certif, siteURL,
                             profile, profilePW,
-                            "", "", byIdLogin, byIdPW, byClassName: byClassName,
+                            login, "", loginPrm, PWPrm, connectionPrm, 
                             connectionByProfile: true, autoconnection: autoConnection,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
+                            ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
+                            checkText: checkText, checkTextPrm: checkTextPrm,
+                            inlineFrames: iFrames, selectPrm: selectPrm, selectIndex: selectIndex);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
                     }
 
-                    if (byClassName.Length > 0 && byIdLogin.Length > 0 && byIdPW.Length > 0)
+                    if (loginPrm != null && PWPrm != null)
                     {
                         Debug.WriteLine("byClassName: " + siteName);
                         var site1 = Site.CreateInstanceSiteWithConnection(
-                            siteName, surveillance, certif, siteURL, 
+                            siteName, surveillance, certif, siteURL,
                             profile, profilePW,
-                            login, "", byIdLogin, byIdPW, byClassName: byClassName,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
+                            login, "", loginPrm, PWPrm, connectionPrm,
+                            ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
+                            checkText: checkText, checkTextPrm: checkTextPrm,
+                            inlineFrames: iFrames, selectPrm: selectPrm, selectIndex: selectIndex);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
                     }
 
-                    if (connectionByProfile && byCssSelector.Length > 0)
+                    if (connectionPrm !=null && loginPrm != null && PWPrm != null)
                     {
-                        Debug.WriteLine("byCssSelector: " + siteName);
+                        Debug.WriteLine("byName + byIdConnection: " + siteName);
                         var site1 = Site.CreateInstanceSiteWithConnection(
                             siteName, surveillance, certif, siteURL,
                             profile, profilePW,
-                            "", "", byIdLogin, byIdPW, "", "", byCssSelector, connectionByProfile: true,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
+                            login, "", loginPrm, PWPrm, connectionPrm,
+                            ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
+                            checkText: checkText, checkTextPrm: checkTextPrm,
+                            inlineFrames: iFrames, selectPrm: selectPrm, selectIndex: selectIndex);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
                     }
 
-                    if (byIdConnection.Length > 0 && byNameLogin.Length > 0 && byNamePW.Length > 0)
-                    {
-                        Debug.WriteLine("byName + byIdConnection: " + siteName);
-                        var site1 = Site.CreateInstanceSiteWithConnectionByNameAndByIdConnection(
-                            siteName, surveillance, certif, siteURL,
-                            profile, profilePW,
-                            byNameLogin, byNamePW, byIdConnection,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector);
-                        sites.Add(site1);
-                        siteInProgress = false;
-                        continue;
-                    }
-
-                    if (byIdConnection.Length > 0)
+                    if (connectionPrm != null)
                     {
                         Debug.WriteLine("byIdConnection: " + siteName);
                         var site1 = Site.CreateInstanceSiteWithConnection(
                             siteName, surveillance, certif, siteURL,
                             profile, profilePW,
-                            login, "", byIdLogin, byIdPW, byIdConnection,
+                            login, "", loginPrm, PWPrm, connectionPrm,
                             ignoreContextAllreadyOpenedAlert: ignoreContextAllreadyOpenedAlert,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector,
-                            inlineFrames: iFrames, byIdSelect: byIdSelect, selectIndex: selectIndex);
+                            checkText: checkText, checkTextPrm: checkTextPrm,
+                            inlineFrames: iFrames, selectPrm: selectPrm, selectIndex: selectIndex);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
@@ -1232,10 +1205,10 @@ namespace SurveillanceCSharp
                     {
                         Debug.WriteLine("Simple ping: " + siteName);
                         var site1 = Site.CreateInstanceSiteSimplePing(
-                            siteName, surveillance, certif, siteURL, 
-                            profile, profilePW,
-                            checkText: checkText, checkTextByCssSelector: checkTextByCssSelector, 
-                            checkTextName: checkTextName);
+                                siteName, surveillance, certif, siteURL,
+                                profile, profilePW,
+                                checkText: checkText,
+                                checkTextPrm: checkTextPrm, checkTextName: checkTextName);
                         sites.Add(site1);
                         siteInProgress = false;
                         continue;
@@ -1247,13 +1220,13 @@ namespace SurveillanceCSharp
                 {
                     siteName = value;
                     siteURL = "";
-                    login = ""; byIdLogin = ""; byIdPW = ""; byIdConnection = ""; 
-                    byClassName = ""; byCssSelector = "";
+                    login = "";
                     autoConnection = false; connectionByProfile = false;
-                    byNameLogin = ""; byNamePW = "";
-                    checkText = ""; checkTextByCssSelector = ""; checkTextName = "";
-                    
-                    byIdSelect = "";
+                    checkText = "";
+
+                    loginPrm = null; PWPrm = null; connectionPrm = null;
+                    selectPrm = null; checkTextPrm = null; checkTextName = null;
+
                     selectIndex = 0;
                     iFrames = new List<WSAParameter>();
 
@@ -1273,56 +1246,121 @@ namespace SurveillanceCSharp
                 if (value.Length > 0) { login = value; continue; }
 
                 value = ReadValue(ligne, ". ByIdLogin : ");
-                if (value.Length > 0) { byIdLogin = value; continue; }
-
-                value = ReadValue(ligne, ". ByIdPW : ");
-                if (value.Length > 0) { byIdPW = value; continue; }
-
-                value = ReadValue(ligne, ". ByNameLogin : ");
-                if (value.Length > 0) { byNameLogin = value; continue; }
-
-                value = ReadValue(ligne, ". ByNamePW : ");
-                if (value.Length > 0) { byNamePW = value; continue; }
-
-                value = ReadValue(ligne, ". ByIdConnection : "); 
-                if (value.Length > 0) { byIdConnection = value; continue; }
-                
-                value = ReadValue(ligne, ". ByIdSelect : ");
-                if (value.Length > 0) { byIdSelect = value; continue; }
-                
-                value = ReadValue(ligne, ". ByIdInlineFrame : ");
-                if (value.Length > 0) {
-                    var iFrame = new WSAParameter();
-                    iFrame.Type = ParameterType.ById;
-                    iFrame.Value = value;
-                    iFrames.Add(iFrame);
+                if (value.Length > 0) { 
+                    loginPrm = new WSAParameter(value, ParameterType.ById);
                     continue; 
                 }
-                value = ReadValue(ligne, ". ByCssSelectorInlineFrame : ");
+                value = ReadValue(ligne, ". ByNameLogin : ");
+                if (value.Length > 0) { 
+                    loginPrm = new WSAParameter(value, ParameterType.ByName);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByClassNameLogin : ");
                 if (value.Length > 0)
                 {
-                    var iFrame = new WSAParameter();
-                    iFrame.Type = ParameterType.ByCssSelector;
-                    iFrame.Value = value;
-                    iFrames.Add(iFrame);
+                    loginPrm = new WSAParameter(value, ParameterType.ByClassName);
                     continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorLogin : ");
+                if (value.Length > 0)
+                {
+                    loginPrm = new WSAParameter(value, ParameterType.ByCssSelector);
+                    continue;
+                }
+
+                value = ReadValue(ligne, ". ByIdPW : ");
+                if (value.Length > 0)
+                {
+                    PWPrm = new WSAParameter(value, ParameterType.ById);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByNamePW : ");
+                if (value.Length > 0) { 
+                    PWPrm = new WSAParameter(value, ParameterType.ByName);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByClassNamePW : ");
+                if (value.Length > 0)
+                {
+                    PWPrm = new WSAParameter(value, ParameterType.ByClassName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorPW : ");
+                if (value.Length > 0)
+                {
+                    PWPrm = new WSAParameter(value, ParameterType.ByCssSelector);
+                    continue;
+                }
+
+                value = ReadValue(ligne, ". ByIdConnection : ");
+                if (value.Length > 0) { 
+                    connectionPrm = new WSAParameter(value, ParameterType.ById);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByNameConnection : ");
+                if (value.Length > 0)
+                {
+                    connectionPrm = new WSAParameter(value, ParameterType.ByName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByClassNameConnection : ");
+                if (value.Length > 0)
+                {
+                    connectionPrm = new WSAParameter(value, ParameterType.ByClassName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorConnection : ");
+                if (value.Length > 0)
+                {
+                    connectionPrm = new WSAParameter(value, ParameterType.ByCssSelector);
+                    continue;
+                }
+
+                value = ReadValue(ligne, ". ByIdSelect : ");
+                if (value.Length > 0) { 
+                    selectPrm = new WSAParameter(value, ParameterType.ById);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByNameSelect : ");
+                if (value.Length > 0)
+                {
+                    selectPrm = new WSAParameter(value, ParameterType.ByName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByClassNameSelect : ");
+                if (value.Length > 0)
+                {
+                    selectPrm = new WSAParameter(value, ParameterType.ByClassName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorSelect : ");
+                if (value.Length > 0)
+                {
+                    selectPrm = new WSAParameter(value, ParameterType.ByCssSelector);
+                    continue;
+                }
+
+                value = ReadValue(ligne, ". ByIdInlineFrame : ");
+                if (value.Length > 0) {
+                    iFrames.Add(new WSAParameter(value, ParameterType.ById));
+                    continue; 
                 }
                 value = ReadValue(ligne, ". ByNameInlineFrame : ");
                 if (value.Length > 0)
                 {
-                    var iFrame = new WSAParameter();
-                    iFrame.Type = ParameterType.ByName;
-                    iFrame.Value = value;
-                    iFrames.Add(iFrame);
+                    iFrames.Add(new WSAParameter(value, ParameterType.ByName));
                     continue;
                 }
-                value = ReadValue(ligne, ". byClassNameInlineFrame : ");
+                value = ReadValue(ligne, ". ByClassNameInlineFrame : ");
                 if (value.Length > 0)
                 {
-                    var iFrame = new WSAParameter();
-                    iFrame.Type = ParameterType.ByClassName;
-                    iFrame.Value = value;
-                    iFrames.Add(iFrame);
+                    iFrames.Add(new WSAParameter(value, ParameterType.ByClassName));
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorInlineFrame : ");
+                if (value.Length > 0)
+                {
+                    iFrames.Add(new WSAParameter(value, ParameterType.ByCssSelector));
                     continue;
                 }
 
@@ -1332,12 +1370,6 @@ namespace SurveillanceCSharp
                     int.TryParse(value, out selectIndex ); 
                     continue; 
                 }
-
-                value = ReadValue(ligne, ". ByClassName : ");
-                if (value.Length > 0) { byClassName = value; continue; }
-
-                value = ReadValue(ligne, ". ByCssSelector : ");
-                if (value.Length > 0) { byCssSelector = value; continue; }
 
                 value = ReadValue(ligne, ". ConnectionByProfile : ");
                 if (value.Length > 0)
@@ -1360,10 +1392,31 @@ namespace SurveillanceCSharp
 
                 value = ReadValue(ligne, ". CheckText : ");
                 if (value.Length > 0) { checkText = value; continue; }
-                
-                value = ReadValue(ligne, ". CheckTextByCssSelector : ");
-                if (value.Length > 0) { checkTextByCssSelector = value; continue; }
-                
+
+                value = ReadValue(ligne, ". ByIdCheckText : ");
+                if (value.Length > 0)
+                {
+                    checkTextPrm = new WSAParameter(value, ParameterType.ById);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByNameCheckText : "); 
+                if (value.Length > 0) { 
+                    checkTextPrm = new WSAParameter(value, ParameterType.ByName);
+                    continue; 
+                }
+                value = ReadValue(ligne, ". ByClassNameCheckText : ");
+                if (value.Length > 0)
+                {
+                    checkTextPrm = new WSAParameter(value, ParameterType.ByClassName);
+                    continue;
+                }
+                value = ReadValue(ligne, ". ByCssSelectorCheckText : ");
+                if (value.Length > 0)
+                {
+                    checkTextPrm = new WSAParameter(value, ParameterType.ByCssSelector);
+                    continue;
+                }
+
                 value = ReadValue(ligne, ". CheckTextName : ");
                 if (value.Length > 0) { checkTextName = value; continue; }
 

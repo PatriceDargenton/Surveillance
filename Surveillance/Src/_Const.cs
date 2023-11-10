@@ -13,8 +13,8 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.08";
-        public const string appDate = "28/10/2023";
+        public const string appVersion = "1.09";
+        public const string appDate = "10/11/2023";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
 
