@@ -4,6 +4,14 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.08] - 2023-10-28
+### Added
+- Boolean Const.navigate: if false, do not navigate, just test ini parameters in debug mode.
+- Possibility to switch to one or more iframes, before searching any web element: ByIdInlineFrame, ByNameInlineFrame, ByClassNameInlineFrame, ByCssSelectorInlineFrame.
+
+### Updated
+- Selenium.WebDriver.4.12.4 -> 4.14.0
+
 ## [1.07] - 2023-10-07
 ### Fixed
 - AngleSharp: version 1.0.4 was not compatible with Chrome 64 bit (we always had a time out), fixed using 1.0.5.

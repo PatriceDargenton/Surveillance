@@ -132,6 +132,27 @@ pause
 . CheckTextByCssSelector : input[name='username']
 . CheckTextName : Username // For information only: name to display in the report if the input box is found
 
+- Site : Example13
+. URL : https://www.example13.com
+. Certificate : Yes
+. ByCssSelectorInlineFrame : body>iframe // Switch to this frame before searching any web element
+. Login : formateur
+. ByIdLogin : id:logon:USERNAME
+. ByIdPW : id:logon:PASSWORD
+. ByIdConnection : id:logon:logonButton
+. ByIdSelect : id:logon:AUTH_TYPE // Find Select web element by Id
+. SelectIndex : 1 // and choose the second choice available
+
+- Site : Example14
+. URL : https://www.example14.com
+. Certificate : Yes
+. ByIdInlineFrame : mainFrame // Switch to this frame before searching any web element
+. ByNameInlineFrame : login // and then, switch to this another frame before searching any web element
+. Login : login
+. ByIdLogin : username
+. ByIdPW : password
+. ByIdConnection : connectBtn
+
 ```
 - Here is [the list of hotkey codes available for SendKeys](https://learn.microsoft.com/fr-fr/dotnet/api/system.windows.forms.sendkeys.send) (like {ENTER}, {TAB}, ...).
 
@@ -146,5 +167,6 @@ pause
 
 ## Projects
 
+- WSAParameter can be generalized, and Site constructors can then be simlified;
 - Shortcut Mode: Control of an already opened browser (for now, the browser must be closed beforehand);
 - Control of sites with a connection via a JavaScript alert dialog box.
