@@ -4,6 +4,12 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.10] - 2023-11-12
+### Updated
+- Selenium.WebDriver.4.14.0 -> 4.15.0
+- Chrome driver : 117 -> 119
+- noInstallRequired : true -> false (for ChromeDriver, since version 115).
+
 ## [1.09] - 2023-11-10
 ### Updated
 - WSAParameter generalized, and Site constructors simlified;

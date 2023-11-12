@@ -13,8 +13,8 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.09";
-        public const string appDate = "10/11/2023";
+        public const string appVersion = "1.10";
+        public const string appDate = "12/11/2023";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
 
@@ -70,14 +70,15 @@ namespace Surveillance
         // MS-Edge can be disabled
         public static bool MSEdgeEnabled = true;
         public static bool MSEdgeSeleniumManagerCheck = true;
-        public const string MSEdgeVersion = "117.0.2045.36";
+        public const string MSEdgeVersion = "119.0.2151.58"; //"117.0.2045.36";
 
-        public const string ChromeVersion = "117.0.5938.88";
+        public const string ChromeVersion = "119.0.6045.105"; //"117.0.5938.88";
         public const string FirefoxVersion = "0.33.0";
 
         // If there are enough rights on the workstation to automatically download the drivers,
         //  this boolean can be left true
-        public static bool noInstallRequired = true;
+        // Since version 115, Chrome driver requires manual download
+        public static bool noInstallRequired = false;
 
         // If not, try to copy from Installation directory,
         //  otherwise, let the user copy the driver himself
