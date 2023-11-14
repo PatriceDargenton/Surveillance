@@ -11,19 +11,28 @@ Surveillance is a tool for monitoring websites or applications by controlling th
 
 ## Installation
 
-Click on the Installation button if it's enabled (if not enabled, it means everything is already installed).
-
 The new Selenium manager now requires the Chrome driver to be downloaded manually, see here:
 
 https://chromedriver.chromium.org/downloads
 
-https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/117.0.5938.88/win64/chromedriver-win64.zip
+https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/119.0.6045.105/win64/chromedriver-win64.zip
 
-chromedriver.exe must be copied to:
+In order to enable the Start button, you must put the web drivers into a subdirectory \Installation for each web driver (if the software is on a shared network directory, then users will be able to copy them):
+```
+Installation\.cache\selenium\chromedriver\win64\119.0.6045.105\chromedriver.exe
+Installation\.cache\selenium\geckodriver\win64\0.33.0\geckodriver.exe
+Installation\.cache\selenium\msedgedriver\win64\119.0.2151.58\msedgedriver.exe
+```
+
+Click on the Installation button if it's enabled (if not enabled, it means everything is already installed).
+
+The Install button help users to copy the web drivers into their local Windows user directory, for example:
 
 ```
-C:\Users\[YourWindowsAccount]\.cache\selenium\chromedriver\win64\117.0.5938.88\chromedriver.exe
+C:\Users\[YourWindowsAccount]\.cache\selenium\chromedriver\win64\119.0.6045.105\chromedriver.exe
 ```
+
+See there for more information:
 
 https://www.selenium.dev/blog/2023/whats-new-in-selenium-manager-with-selenium-4.11.0/
 
