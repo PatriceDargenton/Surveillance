@@ -13,8 +13,8 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.10";
-        public const string appDate = "12/11/2023";
+        public const string appVersion = "1.11";
+        public const string appDate = "17/02/2024";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
 
@@ -70,9 +70,9 @@ namespace Surveillance
         // MS-Edge can be disabled
         public static bool MSEdgeEnabled = true;
         public static bool MSEdgeSeleniumManagerCheck = true;
-        public const string MSEdgeVersion = "119.0.2151.58"; //"117.0.2045.36";
+        public const string MSEdgeVersion = "119.0.2151.58"; 
 
-        public const string ChromeVersion = "119.0.6045.105"; //"117.0.5938.88";
+        public const string ChromeVersion = "121.0.6167.85"; // "119.0.6045.105";
         public const string FirefoxVersion = "0.33.0";
 
         // If there are enough rights on the workstation to automatically download the drivers,

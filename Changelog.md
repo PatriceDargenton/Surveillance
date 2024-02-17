@@ -4,6 +4,12 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.11] - 2024-02-17
+### Updated
+- Selenium.WebDriver.4.15.0 -> 4.17.0
+- Chrome driver : 119 -> 121
+- AngleSharp : 1.06 -> 1.1.0
+
 ## [1.10] - 2023-11-12
 ### Updated
 - Selenium.WebDriver.4.14.0 -> 4.15.0
