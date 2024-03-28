@@ -4,6 +4,10 @@ All notable changes to the Surveillance project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.12] - 2024-03-28
+### Updated
+- Chrome driver : 121 -> 123
+
 ## [1.11] - 2024-02-17
 ### Updated
 - Selenium.WebDriver.4.15.0 -> 4.17.0

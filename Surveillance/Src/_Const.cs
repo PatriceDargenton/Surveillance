@@ -13,8 +13,8 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.11";
-        public const string appDate = "17/02/2024";
+        public const string appVersion = "1.12";
+        public const string appDate = "28/03/2024";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
 
@@ -72,7 +72,7 @@ namespace Surveillance
         public static bool MSEdgeSeleniumManagerCheck = true;
         public const string MSEdgeVersion = "119.0.2151.58"; 
 
-        public const string ChromeVersion = "121.0.6167.85"; // "119.0.6045.105";
+        public const string ChromeVersion = "123.0.6312.86"; //"121.0.6167.85";
         public const string FirefoxVersion = "0.33.0";
 
         // If there are enough rights on the workstation to automatically download the drivers,
