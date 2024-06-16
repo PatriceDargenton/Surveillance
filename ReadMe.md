@@ -17,11 +17,11 @@ https://chromedriver.chromium.org/downloads
 
 https://googlechromelabs.github.io/chrome-for-testing/#stable
 
-https://storage.googleapis.com/chrome-for-testing-public/123.0.6312.86/win64/chromedriver-win64.zip
+https://storage.googleapis.com/chrome-for-testing-public/126.0.6478.61/win64/chromedriver-win64.zip
 
 In order to enable the Start button, you must put the web drivers into a subdirectory \Installation for each web driver (if the software is on a shared network directory, then users will be able to copy them):
 ```
-Installation\.cache\selenium\chromedriver\win64\123.0.6312.86\chromedriver.exe
+Installation\.cache\selenium\chromedriver\win64\126.0.6478.61\chromedriver.exe
 Installation\.cache\selenium\geckodriver\win64\0.33.0\geckodriver.exe
 Installation\.cache\selenium\msedgedriver\win64\119.0.2151.58\msedgedriver.exe
 ```
@@ -31,7 +31,7 @@ Click on the Installation button if it's enabled (if not enabled, it means every
 The Install button help users to copy the web drivers into their local Windows user directory, for example:
 
 ```
-C:\Users\[YourWindowsAccount]\.cache\selenium\chromedriver\win64\123.0.6312.86\chromedriver.exe
+C:\Users\[YourWindowsAccount]\.cache\selenium\chromedriver\win64\126.0.6478.61\chromedriver.exe
 ```
 
 See there for more information:

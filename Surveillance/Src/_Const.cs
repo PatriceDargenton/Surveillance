@@ -13,10 +13,10 @@ namespace Surveillance
 #endif
 
         public const string appTitle = "Surveillance";
-        public const string appVersion = "1.12";
-        public const string appDate = "28/03/2024";
+        public const string appVersion = "1.13";
+        public const string appDate = "16/06/2024";
         public const string MSEdgeVersion = "119.0.2151.58";
-        public const string ChromeVersion = "123.0.6312.86"; //"121.0.6167.85";
+        public const string ChromeVersion = "126.0.6478.61"; //"123.0.6312.86";
         public const string FirefoxVersion = "0.33.0";
         public const string webSitesListFile = "Surveillance.ini";
         public const string report = "Report.txt";
