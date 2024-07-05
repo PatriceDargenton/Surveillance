@@ -361,8 +361,8 @@ namespace SurveillanceCSharp
 
                     if (site.SimplePing && !site.JustCheckElement && !site.CheckElement)
                     {
-                        sb.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
-                        sbFull.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
+                        sb.AppendLine(siteName + Const.sep1 + "Ping: " + site.StatusCodeResult);
+                        sbFull.AppendLine(siteName + Const.sep1 + "Ping: " + site.StatusCodeResult);
                         continue;
                     }
                 }
@@ -511,8 +511,8 @@ namespace SurveillanceCSharp
 
                     if (site.SimplePing && !site.JustCheckElement && !site.CheckElement)
                     {
-                        sb.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
-                        sbFull.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
+                        sb.AppendLine(siteName + Const.sep1 + "Ping: " + site.StatusCodeResult);
+                        sbFull.AppendLine(siteName + Const.sep1 + "Ping: " + site.StatusCodeResult);
                         continue; 
                     }
                 }
@@ -668,8 +668,8 @@ namespace SurveillanceCSharp
 
                     if (site.SimplePing && !site.JustCheckElement && !site.CheckElement)
                     {
-                        sb.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
-                        sbFull.AppendLine(siteName + Const.sep1 + "Ping " + site.StatusCodeResult);
+                        sb.AppendLine(siteName + Const.sep1 + "Ping:" + site.StatusCodeResult);
+                        sbFull.AppendLine(siteName + Const.sep1 + "Ping: " + site.StatusCodeResult);
                         continue;
                     }
                 }
